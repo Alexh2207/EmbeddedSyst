@@ -3,14 +3,14 @@
 #include <cstdio>
 #include <cstring>
 
-BufferedSerial gps(PA_9, PA_10);
+BufferedSerial gps(PA_9, PA_10,9600);
 char gpsData[128];
 
 typedef struct{
-    char formatted_time[10];
+    char formattedTime[10];
     char *latitude;
     char *longitude;
-} gps_t
+} gps_t;
 
 gps_t processNMEASentence(const char* sentence) {
     // Analiza el mensaje NMEA y extrae la información de latitud, longitud y tiempo
@@ -72,22 +72,14 @@ gps_t read_data(){
             gpsData[index++] = c;
         } else if (c == '\n') {
             gpsData[index] = '\0';  // Agrega el carácter nulo al final del mensaje
-            processNMEASentence(gpsData);
+            return processNMEASentence(gpsData);
         } else if (index < sizeof(gpsData) - 1) {
             gpsData[index++] = c;
         }
     }
+
+    gps_t gps_void;
+
+    return gps_void;
 }
-
-int main (){
-  
-
-    pc.write("programme start\n", strlen("programme start\n"));
-    
-    gps.set_baud(9600);
-
-    while (1) {
-        read_data();
-    }
- }
 
