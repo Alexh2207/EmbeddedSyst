@@ -1,5 +1,6 @@
 #include "mbed.h"
 #include "TCS_Master/TCS_Master.h"
+#include "GPS_funcion.h"
 
 I2C i2c_driver(D14, D15);
 
@@ -7,7 +8,7 @@ I2C i2c_driver(D14, D15);
 int main()
 {
     while (true) {
-
+        read_data();
     }
 }
 

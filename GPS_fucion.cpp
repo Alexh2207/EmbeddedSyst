@@ -2,25 +2,19 @@
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
+#include "GPS_funcion.h"
 
 BufferedSerial gps(PA_9, PA_10,9600);
 char gpsData[128];
 
-typedef struct{
-    char formattedTime[10];
-    char *latitude;
-    char *longitude;
-} gps_t;
-
 gps_t processNMEASentence(const char* sentence) {
     // Analiza el mensaje NMEA y extrae la información de latitud, longitud y tiempo
-    
     gps_t data;
     
     if (strstr(sentence, "$GPGGA") != NULL) {
         char *token = strtok((char*)sentence, ",");
         int count = 1;
-        char *latitude, *longitude, *time;
+        char *time;
 
         
         while (token != NULL) {
@@ -42,7 +36,6 @@ gps_t processNMEASentence(const char* sentence) {
         }
 
         // regular
-         char formattedTime[10];
         data.formattedTime[0] = time[0];
         data.formattedTime[1] = time[1];
         data.formattedTime[2] = ':';
@@ -55,7 +48,7 @@ gps_t processNMEASentence(const char* sentence) {
 
         //  la latitud y la longitud 
         // Puedes convertir las coordenadas de grados, minutos y segundos a grados decimales si es necesario
-        printf("Tiempo: %s, Latitud: %s, Longitud: %s\n", formattedTime, latitude, longitude);
+        printf("Tiempo: %s, Latitud: %s, Longitud: %s\n", data.formattedTime, data.latitude, data.longitude);
     }
 
     return data;
