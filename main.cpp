@@ -1,5 +1,6 @@
 #include "mbed.h"
 #include "TCS_Master/TCS_Master.h"
+#include "humidity_and_temp/si7021_control.h"
 #include "GPS_funcion.h"
 
 
@@ -22,8 +23,30 @@ accel_vector mma_read_vector();
 // main() runs in its own thread in the OS
 int main()
 {
+
+    //Variables de datos:
+
+    RHT_data humid_meas;
+    Color_data color;
+    accel_vector acceleration;
+
+    //Inicialización de sensores:
+
+    mma_config(mma_addr, 2, 2);
+
+    tcs_control tcs;
+
+    si7021_control temp(0x80);
+
+    temp.write_user_reg(0);
+
     while (true) {
         read_data();
+
+        //funciones de lectura de los sensores:
+        acceleration = mma_read_vector();
+        color = tcs.color_meas();
+        humid_meas = temp.data_meas();
     }
 }
 
