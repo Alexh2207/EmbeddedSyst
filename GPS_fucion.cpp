@@ -6,11 +6,14 @@
 
 BufferedSerial gps(PA_9, PA_10,9600);
 char gpsData[128];
+ int index = 0;
+char c;
+gps_t data;
 
 gps_t processNMEASentence(const char* sentence) {
     // Analiza el mensaje NMEA y extrae la información de latitud, longitud y tiempo
-    gps_t data;
     
+     printf("hola3 \n");
     if (strstr(sentence, "$GPGGA") != NULL) {
         char *token = strtok((char*)sentence, ",");
         int count = 1;
@@ -34,7 +37,7 @@ gps_t processNMEASentence(const char* sentence) {
             token = strtok(NULL, ",");
             count++;
         }
-
+          printf("hola2 \n");
         // regular
         data.formattedTime[0] = time[0];
         data.formattedTime[1] = time[1];
@@ -56,16 +59,22 @@ gps_t processNMEASentence(const char* sentence) {
 }
 
 gps_t read_data(){
-    int index = 0;
-    char c;
-    char gpsData[128];
+    
+    
+     
     if (gps.read(&c, 1)) {
+        
         if (c == '$') {
             index = 0;
             gpsData[index++] = c;
+             
         } else if (c == '\n') {
+           
             gpsData[index] = '\0';  // Agrega el carácter nulo al final del mensaje
-            return processNMEASentence(gpsData);
+            
+             processNMEASentence(gpsData);
+             
+            //return processNMEASentence(gpsData);
         } else if (index < sizeof(gpsData) - 1) {
             gpsData[index++] = c;
         }

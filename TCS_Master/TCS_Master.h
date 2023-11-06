@@ -11,8 +11,8 @@ extern I2C i2c_driver;
 const char tcs_whoami = 0x92;
 const char tcs_config = 0x80;
 const char tcs_data = 0xa0 | 0x14;
-const char si_meas_humid = 0xF5;
-const char si_meas_temp = 0xE0;
+//const char si_meas_humid = 0xF5;
+//const char si_meas_temp = 0xE0;
 
 typedef struct{
     int r,g,b,c;
