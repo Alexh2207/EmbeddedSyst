@@ -1,6 +1,7 @@
 #include "mbed.h"
 #include "TCS_Master/TCS_Master.h"
 #include "humidity_and_temp/si7021_control.h"
+#include "MMA_Master/MMA_Master.h"
 #include "GPS_funcion.h"
 #include <cstdio>
 #include <cstring>
@@ -39,20 +40,6 @@ struct H1_data{
 
 int cont_h=0;
 H1_data MyData;
-
-typedef struct{
-    float x;
-    float y;
-    float z;
-}accel_vector;
-
-int range_store = 0;
-
-const char mma_addr = 0x3A;
-
-void mma_config(uint8_t addr, int range, int oversampling);
-
-accel_vector mma_read_vector();
 
 
 //instancia de los sensor
@@ -146,6 +133,11 @@ void Max_min(){
 // main() runs in its own thread in the OS
 int main()
 {
+
+    pc.set_baud(115200);
+    pc.set_format(8, pc.None, 1);
+    pc.write("STARTING PROGRAM\n", 17);
+
     int max_valor;
     
     char tiempo[10];
@@ -159,7 +151,7 @@ int main()
 
     //Inicialización de sensores:
 
-    mma_config(mma_addr, 2, 2);
+    mma_control mma;
 
     tcs_control tcs;
 
@@ -170,6 +162,8 @@ int main()
     //configuarcion de la interrupcion en el main
     uButton.mode(PullUp);
     uButton.rise(user_button_int );
+
+    char string [50];
     
      //iniciacion de led 
       led1=1;
@@ -196,7 +190,7 @@ int main()
              sprintf(message,"Esto es modo TEST \n");
              pc.write(message , strlen(message) );
 
-             read_data();
+             acceleration = mma.mma_read_vector();
 
              color_dominante(color_data.c,color_data.r, color_data.g,color_data.b);
              
@@ -204,14 +198,17 @@ int main()
             
              F_light( Light.read_u16());
              F_Soil(Soil.read_u16());
-             
+
+            sprintf(string,"X: %f, Y: %f, Z: %f \n", acceleration.x, acceleration.y, acceleration.z);
+
+            pc.write(string, strlen(string));
             
             
              
 
 
             sprintf(message,"Tiempo: %s, Latitud: %s, Longitud: %s\n", gpsData.formattedTime, gpsData.latitude, gpsData.longitude);
-             pc.write(message, strlen(message));
+            pc.write(message, strlen(message));
              
             ThisThread::sleep_for(2s);
             break;
@@ -243,86 +240,4 @@ int main()
                 break;
         }
     }
-}
-
-/*
-// main() runs in its own thread in the OS
-int main()
-{
-
-    mma_config(mma_addr, 2, 2);
-
-    accel_vector data = mma_read_vector();
-
-    ThisThread::sleep_for(1s);
-
-    data = mma_read_vector();
-
-    ThisThread::sleep_for(1s);
-
-    data = mma_read_vector();
-
-    printf("%f", data.x);
-
-    while (true) {
-        
-    }
-}*/
-
-void mma_config(uint8_t addr, int range, int oversampling){
-
-    char reset[2] = {0x2B, 0x40};
-
-    char whoami = 0x0D;
-    range_store = (range);
-    int range_store_config = range_store >> 2;
-    char range_config[2] = {0x0E, (char)range_store_config}; 
-    char oversampling_config[2] = {0x0E, (char)(oversampling & 0x03)};
-    char activate[2] = {0x2A, 0x05};
-    char fifo_off[2] = {0x09, 0x00};
-    char orientation[2] = {0x11, 0x40};
-
-    char read_reset[1];
-
-    if(i2c_driver.write(mma_addr, &(whoami), 1, true) != 0)
-        printf("shiiiiit");
-
-    i2c_driver.read(mma_addr, read_reset, 1);
-
-    printf("%x", read_reset[0]);
-
-    i2c_driver.write(mma_addr, reset, 2);
-
-    i2c_driver.write(mma_addr, &(reset[0]), 1);
-    do{
-        i2c_driver.read(mma_addr, read_reset, 1);
-    }while(read_reset[0] == 0x40);
-
-    i2c_driver.write(mma_addr, range_config, 2);
-
-    i2c_driver.write(mma_addr, oversampling_config, 2);
-
-    i2c_driver.write(mma_addr, activate, 2);
-    
-    i2c_driver.write(mma_addr, fifo_off, 2);
-
-}
-
-accel_vector mma_read_vector(){
-
-    accel_vector data;
-
-    char data_addr = 0x01;
-
-    char data_raw[6];
-
-    i2c_driver.write(mma_addr, &data_addr, 1);
-
-    i2c_driver.read(mma_addr, data_raw, 6);
-
-    data.x = ((data_raw[0] << 8 | data_raw[1]) >> 2)/((4096.0*2)/range_store);
-    data.y = ((data_raw[2] << 8 | data_raw[3]) >> 2)/((4096.0*2)/range_store);
-    data.z = ((data_raw[4] << 8 | data_raw[5]) >> 2)/((4096.0*2)/range_store);
-
-    return data;
 }
