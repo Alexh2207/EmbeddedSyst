@@ -1,64 +1,10 @@
-#include "mbed.h"
-#include <cstdint>
 #include "MMA_Master.h"
 
-I2C i2c_driver(D14, D15);
-BufferedSerial pc(USBTX, USBRX);
-/*
-typedef struct{
-    float x;
-    float y;
-    float z;
-}accel_vector;
-
-int range_store = 0;
-
-const char mma_addr = 0x3A;
-
-void mma_config(uint8_t addr, int range, int oversampling);
-
-accel_vector mma_read_vector();*/
-
-// main() runs in its own thread in the OS
-int main()
-{
-
-    pc.set_baud(115200);
-    pc.set_format(8, pc.None, 1);
-    pc.write("STARTING PROGRAM\n", 17);
-
-    mma_control MMA;
-
-    ThisThread::sleep_for(1s);
-
-    accel_vector data = MMA.mma_read_vector();
-
-    ThisThread::sleep_for(1s);
-
-    data = MMA.mma_read_vector();
-
-    ThisThread::sleep_for(1s);
-
-    data = MMA.mma_read_vector();
-
-    printf("%f", data.x);
-
-    char string [50];
-
-    while (true) {
-        ThisThread::sleep_for(1s);
-
-        data = MMA.mma_read_vector();
-
-        sprintf(string,"X: %f, Y: %f, Z: %f \n", data.x, data.y, data.z);
-
-        pc.write(string, strlen(string));
-    }
-}
-/*
-void mma_config(uint8_t addr, int range, int oversampling){
+mma_control::mma_control(uint8_t address, int range){
 
     char reset[2] = {0x2B, 0x40};
+
+    mma_addr = address;
 
     char whoami = 0x0D;
     range_store = (range);
@@ -92,8 +38,8 @@ void mma_config(uint8_t addr, int range, int oversampling){
 
 }
 
-accel_vector mma_read_vector(){
-
+accel_vector mma_control::mma_read_vector(){
+    
     accel_vector data;
 
     char data_addr = 0x01;
@@ -114,8 +60,6 @@ accel_vector mma_read_vector(){
     int16_t unsigned_y = ((data_raw[3] >> 7) == 0) ? ((data_raw[3] << 8 | data_raw[4]) >> 2) : (((data_raw[3] << 8 | data_raw[4]) >> 2) | 0xC000);
     int16_t unsigned_z = ((data_raw[5] >> 7) == 0) ? ((data_raw[5] << 8 | data_raw[6]) >> 2) : (((data_raw[5] << 8 | data_raw[6]) >> 2) | 0xC000);
 */
-/*
-    (((int16_t)(data_raw[1] << 8 | data_raw[2])) >> 2)
 
     int16_t unsigned_x = ((data_raw[1] << 8 | data_raw[2]));
     unsigned_x >>= 2; 
@@ -131,4 +75,4 @@ accel_vector mma_read_vector(){
     data.z = (float)(unsigned_z)/((4096*2)/range_store);
 
     return data;
-}*/
+}
