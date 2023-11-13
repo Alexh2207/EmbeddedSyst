@@ -186,7 +186,7 @@ int main()
         // llama a las funciones de sensor
         Color_data color_data = tcs_sensor.color_meas();
         RHT_data humid_meas =si7021_sensor.data_meas();
-         gps_t gpsData = read_data();
+        gps_t gpsData = read_data();
        
 
         switch ( state_machine ) {
@@ -196,7 +196,7 @@ int main()
              sprintf(message,"Esto es modo TEST \n");
              pc.write(message , strlen(message) );
 
-             read_data();
+             
 
              color_dominante(color_data.c,color_data.r, color_data.g,color_data.b);
              
@@ -210,9 +210,11 @@ int main()
              
 
 
-            sprintf(message,"Tiempo: %s, Latitud: %s, Longitud: %s\n", gpsData.formattedTime, gpsData.latitude, gpsData.longitude);
+             sprintf(message,"Tiempo: %s\n", gpsData.formattedTime);
              pc.write(message, strlen(message));
              
+             sprintf(message, "\n\n");
+             pc.write(message, strlen(message));
             ThisThread::sleep_for(2s);
             break;
             
@@ -221,11 +223,12 @@ int main()
 
             case NORMAL:
               
+              
                 sprintf(message,"esto es modo Normal \n");
                 pc.write(message , strlen(message) );
                  
                 //llamada de funciones delos sensor
-
+   
               color_dominante(color_data.c,color_data.r, color_data.g,color_data.b);
               Temp_hum(humid_meas.temp ,humid_meas.humid);
                MyData.temp[cont_h]=humid_meas.temp;
@@ -239,35 +242,12 @@ int main()
                  pc.write(message , strlen(message) );
               ThisThread::sleep_for(30s);
                    
+                   
                 
                 break;
         }
     }
 }
-
-/*
-// main() runs in its own thread in the OS
-int main()
-{
-
-    mma_config(mma_addr, 2, 2);
-
-    accel_vector data = mma_read_vector();
-
-    ThisThread::sleep_for(1s);
-
-    data = mma_read_vector();
-
-    ThisThread::sleep_for(1s);
-
-    data = mma_read_vector();
-
-    printf("%f", data.x);
-
-    while (true) {
-        
-    }
-}*/
 
 void mma_config(uint8_t addr, int range, int oversampling){
 
