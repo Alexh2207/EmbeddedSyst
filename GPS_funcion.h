@@ -8,8 +8,8 @@
 
 typedef struct{
     char formattedTime[10];
-   const char *latitude;
-   const char *longitude;
+    char *latitude;
+    char *longitude;
 } gps_t;
 
 gps_t read_data();
