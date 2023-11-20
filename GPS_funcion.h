@@ -6,12 +6,15 @@
 #include <cstdint>
 #include <cstdio>
 
-typedef struct{
+
+typedef struct {
     char formattedTime[10];
-    char *latitude;
-    char *longitude;
+    char latitude[15];  // Tamaño ajustado para datos de latitud
+    char longitude[15]; // Tamaño ajustado para datos de longitud
+    int ack;
 } gps_t;
 
+void configureGPSToGPGGAyGPRMC();
 gps_t read_data();
 
 #endif

@@ -50,7 +50,7 @@ RHT_data si7021_control::data_meas(){
 
     result.temp = ((175.72 * (temp_val[0] << 8 | temp_val[1]))/65536) - 46.85;
 
-    result.humid = ((125 * (temp_val[0] << 8 | temp_val[1]))/65536) - 6;
+    result.humid = ((125.0 * (temp_val[0] << 8 | temp_val[1]))/65536) - 6;
 
     return result;
 

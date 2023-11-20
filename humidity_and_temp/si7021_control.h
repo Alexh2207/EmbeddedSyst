@@ -16,8 +16,8 @@ const char si_meas_humid = 0xF5;
 const char si_meas_temp = 0xE0;
 
 typedef struct{
-    int temp;  // de float a int pase
-    int humid;
+    float temp;  // de float a int pase
+    float humid;
 } RHT_data;
 
 class si7021_control{
