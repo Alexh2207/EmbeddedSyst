@@ -20,7 +20,7 @@ mma_control::mma_control(uint8_t address, int range){
 
     //Lectura del who am I
     if(i2c_driver.write(mma_addr, &(whoami), 1, true) != 0)
-        printf("shiiiiit");
+        printf("NACK");
 
     i2c_driver.read(mma_addr, read_reset, 1);
 
@@ -65,7 +65,7 @@ accel_vector mma_control::mma_read_vector(){
 
     //Operaciones para sacar los datos de forma correcta
 
-    int16_t unsigned_x = ((data_raw[1] << 8 | data_raw[2]));
+    int16_t unsigned_x = (((data_raw[1] << 8 | data_raw[2])) >> 2);
     unsigned_x >>= 2; 
     int16_t unsigned_y = (data_raw[3] << 8 | data_raw[4]);
     unsigned_y >>= 2;

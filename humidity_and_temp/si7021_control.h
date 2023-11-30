@@ -27,12 +27,16 @@ class si7021_control{
 
     public:
 
+        //constructor of the class, assigns the I2C address of the sensor
         si7021_control(uint8_t address = 0x80);
 
+        //Writes the user register with the specified value
         void write_user_reg(uint8_t value);
         
+        //Writes the heater register with the specified value
         void write_heater_reg(uint8_t value);
         
+        //Reads the data offered by the sensor
         RHT_data data_meas();
 
 };
